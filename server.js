@@ -124,6 +124,85 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.post('/api/games', async (req, res) => {
+    const newGameData = req.body; // Dati inviati dal client
+
+    console.log(`Richiesta POST /api/games ricevuta con body:`, newGameData);
+
+    // --- Validazione Input Essenziale ---
+    if (!newGameData || typeof newGameData !== 'object') {
+        return res.status(400).json({ message: 'Body della richiesta mancante o non valido.' });
+    }
+    if (!newGameData.title || typeof newGameData.title !== 'string' || newGameData.title.trim() === '') {
+        return res.status(400).json({ message: 'Il campo "title" è obbligatorio e deve essere una stringa non vuota.' });
+    }
+    // Impedisci al client di impostare l'ID (lo generiamo noi)
+    if (newGameData.id) {
+        console.warn("Il client ha provato a inviare un ID nel body POST, verrà ignorato.");
+        delete newGameData.id;
+    }
+
+    try {
+        // 1. Leggi i dati attuali
+        let gamesData = [];
+        try {
+            const data = await fs.readFile(GAMES_JSON_PATH, 'utf8');
+            gamesData = JSON.parse(data);
+            if (!Array.isArray(gamesData)) throw new Error("Formato dati non valido.");
+        } catch (readError) {
+            if (readError.code === 'ENOENT') {
+                console.log("File games.json non trovato, ne verrà creato uno nuovo.");
+                gamesData = []; // Inizia con un array vuoto se il file non esiste
+            } else {
+                console.error("Errore lettura/parsing games.json per POST:", readError);
+                throw readError; // Rilancia per il catch esterno
+            }
+        }
+
+        // 2. Genera un nuovo ID unico
+        // Trova l'ID massimo attuale e incrementalo
+        const maxId = gamesData.reduce((max, game) => (game.id > max ? game.id : max), 0);
+        const newId = maxId + 1;
+        console.log(`Nuovo ID generato: ${newId}`);
+
+        // 3. Prepara l'oggetto completo del nuovo gioco
+        const today = new Date();
+        const day = today.getDate();
+        const month = today.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '');
+        const year = today.getFullYear();
+        const formattedDate = `${day} ${month} ${year}`;
+
+        const finalNewGame = {
+            id: newId, // ID generato dal server
+            title: newGameData.title.trim(), // Titolo obbligatorio (pulito)
+            price: newGameData.price || "Non specificato", // Valori di default se non forniti
+            genre: newGameData.genre || "N/D",
+            platform: newGameData.platform || "N/D",
+            hours: newGameData.hours || null, // Ore (null se non specificato)
+            status: newGameData.status || 'to-start', // Default a 'to-start'
+            completion: typeof newGameData.completion === 'number' ? newGameData.completion : 0, // Default a 0
+            date: newGameData.date || formattedDate, // Data (default a oggi se non fornita)
+            // Aggiungi qui altre proprietà se necessario
+        };
+        console.log("Oggetto gioco finale da aggiungere:", finalNewGame);
+
+
+        // 4. Aggiungi il nuovo gioco all'array
+        gamesData.push(finalNewGame);
+
+        // 5. Scrivi l'array aggiornato nel file
+        await fs.writeFile(GAMES_JSON_PATH, JSON.stringify(gamesData, null, 2), 'utf8');
+        console.log(`Nuovo gioco (ID: ${newId}) aggiunto con successo a games.json.`);
+
+        // 6. Invia Risposta di Successo (201 Created)
+        // È buona pratica restituire la risorsa appena creata (con il suo ID)
+        res.status(201).json(finalNewGame);
+
+    } catch (error) {
+        console.error(`Errore durante l'aggiunta del nuovo gioco (POST):`, error);
+        res.status(500).json({ message: 'Errore interno del server durante l\'aggiunta del gioco.' });
+    }
+});
 // --- Avvio del Server ---
 app.listen(PORT, () => {
   console.log(`---------------------------------------------------------`);
@@ -132,6 +211,7 @@ app.listen(PORT, () => {
   console.log(`API endpoints:`);
   console.log(`  GET  /api/games`);
   console.log(`  PUT  /api/games/:id`);
+  console.log(`  POST /api/games`);
   console.log(`---------------------------------------------------------`);
 });
 
