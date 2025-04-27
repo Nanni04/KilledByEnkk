@@ -373,6 +373,76 @@ function debounce(func, wait) {
 }
 
 
+async function deleteGame(gameId) {
+    const index = games.findIndex(g => g.id === gameId); // Trova l'indice nell'array locale
+
+    if (index === -1) {
+        console.error(`Errore interno: Gioco con ID ${gameId} non trovato nei dati locali per l'eliminazione.`);
+        showToast(`Errore: Gioco con ID ${gameId} non trovato nei dati locali.`, 'error');
+        return;
+    }
+    const gameToDelete = games[index];
+
+    // --- Chiedi Conferma all'Utente ---
+    // E' buona pratica chiedere conferma prima di un'azione distruttiva
+    if (!confirm(`Sei sicuro di voler eliminare definitivamente il gioco "${gameToDelete.title}"? L'azione non può essere annullata.`)) {
+        console.log(`Eliminazione gioco ID ${gameId} annullata dall'utente.`);
+        return; // Interrompi se l'utente annulla
+    }
+
+    console.log(`Invio richiesta DELETE a /api/games/${gameId} (con auth header)...`);
+    showToast(`Eliminazione gioco "${gameToDelete.title}" in corso...`, 'info'); // Feedback
+
+    // --- Chiamata API DELETE ---
+    try {
+        const response = await fetch(`/api/games/${gameId}`, {
+            method: 'DELETE', // Metodo HTTP per eliminare
+            headers: {
+                // Solo l'header di autenticazione è necessario per DELETE
+                'X-API-Key': MY_API_SECRET_KEY // Assicurati che MY_API_SECRET_KEY sia definita
+            }
+            // DELETE non ha un body
+        });
+
+        // --- Controlla la risposta del server ---
+        // Status 204 No Content è il successo standard per DELETE
+        if (response.status === 204) {
+            // --- Successo! ---
+            console.log(`Gioco ID ${gameId} eliminato con successo sul server.`);
+
+            // **Rimuovi il gioco dall'array locale `games`**
+            games.splice(index, 1);
+
+            // **Aggiorna l'interfaccia utente**
+            renderGames(); // Ridisegna la lista senza il gioco eliminato
+            updateCounters(); // Aggiorna le statistiche
+            showToast(`Gioco "${gameToDelete.title}" eliminato con successo!`, 'success');
+
+        } else {
+            // Se lo status non è 204, qualcosa è andato storto
+            let errorMsg = `Errore server (${response.status}) durante l'eliminazione.`;
+             if (response.status === 401) {
+                 errorMsg += " (Chiave API mancante o non valida?)";
+             } else if (response.status === 404) {
+                 errorMsg += " (Gioco non trovato sul server?)";
+             }
+            try {
+                // Prova a leggere un messaggio di errore più specifico, se presente
+                const errorData = await response.json(); // Potrebbe non esserci un body JSON per tutti gli errori
+                errorMsg = errorData.message ? `Errore server (${response.status}): ${errorData.message}` : errorMsg;
+            } catch (e) {
+                console.log("Nessun corpo JSON nella risposta d'errore DELETE.");
+            }
+            throw new Error(errorMsg); // Lancia errore per il blocco catch
+        }
+
+    } catch (error) {
+        // --- Gestione Errori della chiamata Fetch o risposta non OK ---
+        console.error(`Errore durante la chiamata API DELETE per il gioco ID ${gameId}:`, error);
+        showToast(`Errore durante l'eliminazione: ${error.message}`, 'error');
+        // Non modificare l'UI locale se l'API fallisce
+    }
+}
 // --- Avvio dell'applicazione ---
 // Assicurati che il DOM sia pronto prima di chiamare init
 document.addEventListener('DOMContentLoaded', init);
