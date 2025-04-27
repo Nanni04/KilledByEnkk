@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Killed by Enkk</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Killed by Enkk</h1>
+            <p class="subtitle">La lista definitiva dei giochi non completati, mai iniziati o in corso da <span id="streamer-name">Enkk</span> (2022 - Present)</p>
+            
+            <div class="stats">
+                <div class="stat total-stat">
+                    <div class="stat-number" id="total-games"></div>
+                    <!--<div class="stat-number" id="total-price">€0</div>-->
+                    <div class="stat-label">Giochi Totali</div>
+                </div>
+                <div class="stat abandoned-stat">
+                    <div class="stat-number" id="abandoned-count"></div>
+                    <!--<div class="stat-number" id="abandoned-price">€0</div>-->
+                    <div class="stat-label">Abbandonati</div>
+                </div>
+                <div class="stat in-progress-stat">
+                    <div class="stat-number" id="in-progress-count"></div>
+                    <!--<div class="stat-number" id="in-progress-price">€0</div>-->
+                    <div class="stat-label">In Corso</div>
+                </div>
+                <div class="stat to-start-stat">
+                    <div class="stat-number" id="to-start-count"></div>
+                    <!--<div class="stat-number" id="to-start-price">€0</div>-->
+                    <div class="stat-label">Da Iniziare</div>
+                </div>
+                <div class="stat completed-stat">
+                    <div class="stat-number" id="completed-count"></div>
+                    <!--<div class="stat-number" id="completed-price">€0</div>-->
+                    <div class="stat-label">Completati</div>
+                </div>
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">Tutti</button>
+                <button class="filter-btn" data-filter="abandoned">Abbandonati</button>
+                <button class="filter-btn" data-filter="in-progress">In Corso</button>
+                <button class="filter-btn" data-filter="to-start">Da Iniziare</button>
+                <button class="filter-btn" data-filter="completed">Completati</button>
+            </div>
+            
+            <div class="search-container">
+                <div class="search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Cerca un gioco...">
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <ul class="games-list" id="games-container"></ul>
+    </main>
+    
+    <!-- Modal per aggiungere/modificare un gioco -->
+    <div class="modal" id="game-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close">&times;</span>
+            <h2 class="modal-title" id="modal-title">Aggiungi Nuovo Gioco</h2>
+            
+            <form id="game-form">
+                <div class="form-group">
+                    <label for="game-title" class="form-label">Titolo del Gioco:</label>
+                    <input type="text" id="game-title" class="form-input" placeholder="Cerca su Steam..." required>
+                    <div class="steam-search-results" id="steam-results"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="game-genre" class="form-label">Genere:</label>
+                    <input type="text" id="game-genre" class="form-input" placeholder="es. RPG, FPS, Strategia...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="game-platform" class="form-label">Piattaforma:</label>
+                    <input type="text" id="game-platform" class="form-input" placeholder="es. PC, PS5, Xbox...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="game-hours" class="form-label">Ore Stimate:</label>
+                    <input type="text" id="game-hours" class="form-input" placeholder="es. 20+ ore">
+                </div>
+                
+                <div class="form-group">
+                    <label for="game-status" class="form-label">Stato:</label>
+                    <select id="game-status" class="form-select" required>
+                        <option value="to-start">Da Iniziare</option>
+                        <option value="in-progress">In Corso</option>
+                        <option value="abandoned">Abbandonato</option>
+                        <option value="completed">Completato</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="completion-group">
+                    <label for="game-completion" class="form-label">Percentuale Completamento:</label>
+                    <input type="range" id="game-completion" class="form-input" min="0" max="100" value="0">
+                    <output for="game-completion" id="completion-value">0%</output>
+                </div>
+            </form>
+        </div>
+    </div>
+    </main>
+    
+    <footer>
+        <p>KilledByEnkk · Ultimo aggiornamento: 27 aprile 2025</p>
+        <p>Made by Nanni04</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>

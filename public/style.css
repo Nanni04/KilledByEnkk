@@ -1,0 +1,694 @@
+
+:root {
+    --primary: #9146FF; /* Colore principale di Twitch */
+    --secondary: #772ce8;
+    --dark: #202124;
+    --light: #ffffff;
+    --card-bg: #303134;
+    --hover: #3c3c42;
+    --border: #e8eaed;
+    --text-grey: #9aa0a6;
+    --abandoned: #ea4335; /* Rosso */
+    --in-progress: #4285f4; /* Blu */
+    --to-start: #fbbc05; /* Giallo */
+    --completed: #34a853; /* Verde */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Product Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: var(--dark);
+    color: var(--light);
+    line-height: 1.6;
+    padding-bottom: 3rem;
+}
+
+header {
+    text-align: center;
+    padding: 4rem 1rem 2rem;
+    margin-bottom: 2rem;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(90deg, var(--abandoned), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.subtitle {
+    color: var(--text-grey);
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.stat {
+    text-align: center;
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    min-width: 150px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.total-stat .stat-number {
+    color: var(--primary);
+}
+
+.abandoned-stat .stat-number {
+    color: var(--abandoned);
+}
+
+.in-progress-stat .stat-number {
+    color: var(--in-progress);
+}
+
+.to-start-stat .stat-number {
+    color: var(--to-start);
+}
+
+.completed-stat .stat-number {
+    color: var(--completed);
+}
+
+.stat-label {
+    color: var(--text-grey);
+    font-size: 1rem;
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background-color: transparent;
+    color: var(--text-grey);
+    border: 1px solid var(--text-grey);
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.filter-btn.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 8px rgba(145, 70, 255, 0.3);
+}
+
+.filter-btn:hover:not(.active) {
+    background-color: var(--hover);
+    border-color: var(--primary);
+}
+
+.filter-btn[data-filter="abandoned"].active {
+    background-color: var(--abandoned);
+    border-color: var(--abandoned);
+    box-shadow: 0 4px 8px rgba(234, 67, 53, 0.3);
+}
+
+.filter-btn[data-filter="in-progress"].active {
+    background-color: var(--in-progress);
+    border-color: var(--in-progress);
+    box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
+}
+
+.filter-btn[data-filter="to-start"].active {
+    background-color: var(--to-start);
+    border-color: var(--to-start);
+    box-shadow: 0 4px 8px rgba(251, 188, 5, 0.3);
+    color: #333;
+}
+
+.filter-btn[data-filter="completed"].active {
+    background-color: var(--completed);
+    border-color: var(--completed);
+    box-shadow: 0 4px 8px rgba(52, 168, 83, 0.3);
+}
+
+.search-container {
+    display: flex;
+    gap: 1rem;
+    margin: 0 auto 2rem;
+    max-width: 700px;
+    flex-wrap: wrap;
+}
+
+.search {
+    flex-grow: 1;
+    position: relative;
+}
+
+.search input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    padding-left: 3rem;
+    border-radius: 24px;
+    border: 1px solid var(--text-grey);
+    background-color: var(--card-bg);
+    color: var(--light);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(145, 70, 255, 0.3);
+}
+
+.search i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-grey);
+}
+
+.add-game-btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 8px rgba(145, 70, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.add-game-btn:hover {
+    background-color: var(--secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(145, 70, 255, 0.4);
+}
+
+.games-list {
+    list-style: none;
+}
+
+.game-item {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.game-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.status-indicator::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    border: 1px solid;
+    opacity: 0.3;
+}
+
+.status-abandoned {
+    background-color: var(--abandoned);
+}
+
+.status-abandoned::after {
+    border-color: var(--abandoned);
+}
+
+.status-in-progress {
+    background-color: var(--in-progress);
+}
+
+.status-in-progress::after {
+    border-color: var(--in-progress);
+}
+
+.status-to-start {
+    background-color: var(--to-start);
+}
+
+.status-to-start::after {
+    border-color: var(--to-start);
+}
+
+.status-completed {
+    background-color: var(--completed);
+}
+
+.status-completed::after {
+    border-color: var(--completed);
+}
+
+.game-info {
+    flex-grow: 1;
+}
+
+.game-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.steam-price {
+    background-color: #1b2838;
+    color: #c7d5e0;
+    font-size: 0.85rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.steam-price i {
+    color: #66c0f4;
+}
+
+.game-description {
+    color: var(--text-grey);
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.game-description span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.game-description i {
+    opacity: 0.7;
+}
+
+.date-info {
+    text-align: right;
+    flex-shrink: 0;
+    color: var(--text-grey);
+    font-size: 0.9rem;
+    margin-left: 1rem;
+}
+
+.date-abandoned {
+    font-weight: bold;
+    color: var(--abandoned);
+}
+
+.date-in-progress {
+    font-weight: bold;
+    color: var(--in-progress);
+}
+
+.date-to-start {
+    font-weight: bold;
+    color: var(--to-start);
+}
+
+.date-completed {
+    font-weight: bold;
+    color: var(--completed);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.action-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s;
+}
+
+.pem-btn {
+    background-color: var(--abandoned);
+    color: white;
+}
+
+.pem-btn:hover {
+    background-color: #d32f2f;
+}
+
+.edit-btn {
+    background-color: var(--primary);
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: var(--secondary);
+}
+
+.completion-info {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.completion-bar {
+    width: 100px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-right: 0.5rem;
+}
+
+.completion-progress {
+    height: 100%;
+    background-color: var(--primary);
+}
+
+.completion-percentage {
+    font-size: 0.8rem;
+    color: var(--text-grey);
+    width: 40px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--light);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: var(--text-grey);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: var(--light);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--light);
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--light);
+    font-size: 1rem;
+}
+
+.form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.steam-search-results {
+    margin-top: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.steam-game-item {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.steam-game-item:last-child {
+    border-bottom: none;
+}
+
+.steam-game-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.steam-game-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.steam-game-info {
+    flex-grow: 1;
+}
+
+.steam-game-title {
+    font-size: 0.95rem;
+    color: var(--light);
+}
+
+.steam-game-price {
+    font-size: 0.85rem;
+    color: #66c0f4;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    color: var(--text-grey);
+    border: 1px solid var(--text-grey);
+}
+
+.cancel-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.save-btn {
+    background-color: var(--primary);
+    color: white;
+}
+
+.save-btn:hover {
+    background-color: var(--secondary);
+}
+
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-grey);
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: var(--secondary);
+    text-decoration: underline;
+}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--card-bg);
+    color: var(--light);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast i {
+    font-size: 1.2rem;
+}
+
+.toast.success i {
+    color: var(--completed);
+}
+
+.toast.error i {
+    color: var(--abandoned);
+}
+
+.toast-message {
+    font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    header {
+        padding: 2rem 1rem 1rem;
+    }
+    
+    h1 {
+        font-size: 2.2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .game-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem 1rem;
+    }
+    
+    .status-indicator {
+        margin-bottom: 0.5rem;
+    }
+    
+    .game-info {
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+    
+    .date-info {
+        text-align: left;
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    .search-container {
+        flex-direction: column;
+    }
+    
+    .add-game-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
