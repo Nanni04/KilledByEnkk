@@ -203,6 +203,63 @@ app.post('/api/games', async (req, res) => {
         res.status(500).json({ message: 'Errore interno del server durante l\'aggiunta del gioco.' });
     }
 });
+
+app.delete('/api/games/:id', async (req, res) => {
+    const gameId = parseInt(req.params.id, 10); // Estrai l'ID e convertilo in numero
+
+    console.log(`Richiesta DELETE /api/games/${gameId} ricevuta.`);
+
+    // Validazione ID
+    if (isNaN(gameId)) {
+        return res.status(400).json({ message: 'ID del gioco non valido.' });
+    }
+
+    try {
+        // 1. Leggi i dati attuali
+        let gamesData = [];
+        try {
+            const data = await fs.readFile(GAMES_JSON_PATH, 'utf8');
+            gamesData = JSON.parse(data);
+            if (!Array.isArray(gamesData)) throw new Error("Formato dati non valido.");
+        } catch (readError) {
+            if (readError.code === 'ENOENT') {
+                console.error("File games.json non trovato per DELETE, impossibile eliminare.");
+                 return res.status(404).json({ message: 'File dei giochi non trovato, impossibile eliminare.' });
+            } else {
+                console.error("Errore lettura/parsing games.json per DELETE:", readError);
+                throw readError;
+            }
+        }
+
+        // 2. Trova l'indice del gioco da eliminare
+        const gameIndex = gamesData.findIndex(game => game.id === gameId);
+
+        // 3. Se non trovato, invia errore 404
+        if (gameIndex === -1) {
+            console.log(`Gioco con ID ${gameId} non trovato per l'eliminazione.`);
+            return res.status(404).json({ message: `Gioco con ID ${gameId} non trovato.` });
+        }
+
+        // 4. Rimuovi il gioco dall'array
+        // Usiamo splice per rimuovere l'elemento all'indice trovato
+        const deletedGame = gamesData.splice(gameIndex, 1)[0]; // splice rimuove e restituisce un array, prendiamo il primo (e unico) elemento
+        console.log(`Gioco rimosso dall'array:`, deletedGame);
+
+        // 5. Scrivi l'array (ora più corto) di nuovo nel file JSON
+        await fs.writeFile(GAMES_JSON_PATH, JSON.stringify(gamesData, null, 2), 'utf8');
+        console.log(`File games.json aggiornato. Gioco ID ${gameId} eliminato.`);
+
+        // 6. Invia Risposta di Successo (200 OK o 204 No Content)
+        // Inviare 200 OK con il gioco eliminato può essere utile per conferma
+        // res.status(200).json(deletedGame);
+        // Oppure inviare 204 No Content, che è comune per DELETE riuscite
+        res.status(204).send(); // Invia una risposta senza corpo
+
+    } catch (error) {
+        console.error(`Errore durante l'eliminazione del gioco ID ${gameId} (DELETE):`, error);
+        res.status(500).json({ message: 'Errore interno del server durante l\'eliminazione del gioco.' });
+    }
+});
 // --- Avvio del Server ---
 app.listen(PORT, () => {
   console.log(`---------------------------------------------------------`);
